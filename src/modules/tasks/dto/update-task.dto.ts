@@ -31,9 +31,4 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsEnum(['CREATED', 'IN_PROCESS', 'DONE'])
   status?: string;
-
-  @ApiProperty({required: false,example:'2024-10-18T06:52:30.862Z'})
-  @IsOptional()
-  @IsDateString()
-  done_at: string;
 }

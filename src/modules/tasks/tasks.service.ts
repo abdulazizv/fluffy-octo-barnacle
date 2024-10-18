@@ -109,4 +109,47 @@ export class TasksService {
 
     return getMicroResponse(null, true, 'Task deleted successfully', null);
   }
+
+  async finishTask(task_id: number) {
+    const task = await this.knex('tasks').where({ id: task_id }).first();
+
+    if (!task) {
+      return getMicroResponse(HttpStatus.NOT_FOUND,false,'not found',null)
+    }
+
+    const updatedTask = await this.knex('tasks').where({ id:task_id }).update(
+        {
+            done_at: this.knex.fn.now(),
+            status: 'DONE'
+        }
+    ).returning('*');
+    
+    return getMicroResponse(null, true, 'Task updated successfully', updatedTask[0]);
+  }
+
+  async getTasksByStatus(worker_user_id: number) {
+    const tasksByStatus = await this.knex('tasks')
+      .where({ worker_user_id: worker_user_id })
+      .select('status', this.knex.raw('count(*) as count'))
+      .groupBy('status');
+
+    return getMicroResponse(null, true, 'Tasks grouped by status fetched successfully', tasksByStatus);
+  }
+
+  async getTasksByProject(worker_user_id: number) {
+    const tasksByProject = await this.knex('tasks')
+      .where({ worker_user_id: worker_user_id })
+      .join('projects', 'tasks.project_id', 'projects.id')
+      .select(
+        'tasks.id as task_id',
+        'tasks.project_id',
+        'projects.name as project_name',
+        'tasks.task',
+        'tasks.status',
+        'tasks.due_date',
+        'tasks.done_at'
+      );
+
+    return getMicroResponse(null, true, 'Tasks grouped by project fetched successfully', tasksByProject);
+  }
 }
