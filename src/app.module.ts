@@ -9,6 +9,7 @@ import { ResponseInterceptor } from './common/custom/response.interceptor';
 import { JwtModule } from '@nestjs/jwt';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { OrganizationUsersModule } from './modules/organizationUsers/organizationUsers.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { OrganizationUsersModule } from './modules/organizationUsers/organizatio
     SharedModule,
     UsersModule,
     OrganizationsModule,
-    OrganizationUsersModule
+    OrganizationUsersModule,
+    ProjectsModule
   ],
   providers: [
     {
