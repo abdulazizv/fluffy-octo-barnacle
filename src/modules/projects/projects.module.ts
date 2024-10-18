@@ -5,7 +5,7 @@ import { ProjectsController } from "./projects.controller";
 import { ProjectsService } from "./projects.service";
 
 @Module({
-    imports: [SharedModule,JwtModule.register({secret: process.env.JWT_SECRET})],
+    imports: [SharedModule],
     controllers: [ProjectsController],
     providers: [ProjectsService],
     exports: [ProjectsService]

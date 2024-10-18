@@ -5,7 +5,7 @@ import { SharedModule } from 'src/shared/shared.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [SharedModule,JwtModule.register({ secret: process.env.JWT_SECRET })],
+  imports: [SharedModule],
   controllers: [OrganizationUsersController],
   providers: [OrganizationUsersService],
 })

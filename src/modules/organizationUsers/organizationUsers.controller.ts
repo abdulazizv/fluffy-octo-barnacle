@@ -1,9 +1,10 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, UseGuards, HttpStatus, Query } from '@nestjs/common';
 import { OrganizationUsersService } from './organizationusers.service';
 import { AddUserToOrganizationDto } from './dto/create-organization.dto';
 import { UpdateUserRoleDto } from './dto/update-organization.dto';
 import { JwtAuthGuard } from 'src/common/custom/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Organization Users')
 @ApiBearerAuth()
@@ -21,8 +22,8 @@ export class OrganizationUsersController {
 
   @ApiOperation({ summary: 'Get all users for a specific organization' })
   @Get(':org_id')
-  async getUsersForOrganization(@Param('org_id') orgId: number) {
-    return this.organizationUsersService.getUsersForOrganization(orgId);
+  async getUsersForOrganization(@Param('org_id') orgId: number,@Query() params: PaginationDto) {
+    return this.organizationUsersService.getUsersForOrganization(orgId,+params.page,+params.size);
   }
 
   @ApiOperation({ summary: 'Update a user\'s role in an organization' })

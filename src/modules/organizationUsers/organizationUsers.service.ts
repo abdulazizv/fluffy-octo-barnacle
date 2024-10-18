@@ -7,7 +7,26 @@ import { getMicroResponse } from 'src/common/responses/response-type';
 export class OrganizationUsersService {
   constructor(@Inject('KnexConnection') private knex: Knex) {}
 
+  private async checkOrgId(id: number) {
+    return await this.knex('organizations').where({ id }).first();
+  }
+
+  private async checkUserId(id: number) {
+    return await this.knex('users').where({ id }).first();
+  }
+
+  private async checkRoleId(id: number) {
+    return await this.knex('roles').where({ id }).first();
+  }
+
   async addUserToOrganization(user_id: number, org_id: number, role_id: number) {
+    const checkOrgId = await this.checkOrgId(org_id)
+    const checkUserId = await this.checkUserId(user_id);
+    const checkRoleId = await this.checkRoleId(role_id);
+    if(!checkOrgId || !checkUserId || !checkRoleId) {
+        return getMicroResponse(HttpStatus.BAD_REQUEST,false,'Incorrect request params',{user_id,org_id,role_id})
+    }
+    
     const [organizationUser] = await this.knex('organization_users')
       .insert({
         user_id: user_id,
@@ -19,13 +38,16 @@ export class OrganizationUsersService {
     return getMicroResponse(HttpStatus.CREATED, true, 'User added to organization', organizationUser);
   }
 
-  async getUsersForOrganization(org_id: number) {
+  async getUsersForOrganization(org_id: number,page: number,size: number) {
+    const offset = (page - 1) * size;
     const users = await this.knex('organization_users')
       .where({ org_id })
       .join('users', 'organization_users.user_id', 'users.id')
       .join('roles','organization_users.role_id','roles.id')
       .join('organizations','organization_users.org_id','organizations.id')
-      .select('users.id as user_id','organization_users.id as id','users.name as user_name', 'organization_users.role_id','organization_users.org_id','organizations.name as org_name','roles.role_name');
+      .select('users.id as user_id','organization_users.id as id','users.name as user_name', 'organization_users.role_id','organization_users.org_id','organizations.name as org_name','roles.role_name')
+      .limit(size)
+      .offset(offset);
 
     return getMicroResponse(HttpStatus.OK, true, 'Users fetched successfully', users);
   }

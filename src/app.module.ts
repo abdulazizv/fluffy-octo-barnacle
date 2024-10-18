@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { OrganizationUsersModule } from './modules/organizationUsers/organizationUsers.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { ProjectsModule } from './modules/projects/projects.module';
     UsersModule,
     OrganizationsModule,
     OrganizationUsersModule,
-    ProjectsModule
+    ProjectsModule,
+    TasksModule
   ],
   providers: [
     {

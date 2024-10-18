@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Request, UseGuards, Query } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/custom/guards/jwt-auth.guard';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -19,8 +20,8 @@ export class ProjectsController {
   }
 
   @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  findAll(@Query() params: PaginationDto) {
+    return this.projectsService.findAll(+params.page,+params.size);
   }
 
   @Get(':id')

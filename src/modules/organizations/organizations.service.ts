@@ -18,8 +18,13 @@ export class OrganizationsService {
     return getMicroResponse(HttpStatus.CREATED,true,'Created',organization);
   }
 
-  async getAllOrganizations(): Promise<MicroResponse> {
-    const data = await this.knex('organizations').select('*');
+  async getAllOrganizations(page: number,size: number): Promise<MicroResponse> {
+    const offset = (page - 1) * size;
+    const data = await this.knex('organizations')
+      .select('*')
+      .limit(size)
+      .offset(offset)
+    ;
 
     if(data.length < 1) {
         return getMicroResponse(HttpStatus.NOT_FOUND, false,'Not found',null)

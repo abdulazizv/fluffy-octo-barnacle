@@ -29,12 +29,15 @@ export class ProjectsService {
     return getMicroResponse(HttpStatus.CREATED, true, 'Project created successfully', project);
   }
 
-  async findAll() {
+  async findAll(page:number,size:number) {
+    const offset = (page - 1) * size;
     const projects = await this.knex('projects')
         .join('organizations','projects.org_id','organizations.id')
         .join('users', 'projects.created_by', 'users.id')
         .select('projects.id','projects.org_id','projects.created_by','projects.name as project_name','projects.created_at','organizations.name as organization_name','users.name as user_name')
-
+        .limit(size)
+        .offset(offset);
+      
     if (projects.length < 1) {
         return getMicroResponse(HttpStatus.NOT_FOUND, false,'Not found',null)
     }

@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
 import { JwtAuthGuard } from 'src/common/custom/guards/jwt-auth.guard';
 import { CreateOrganizationDto } from './dto/create-organizations.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MicroResponse } from 'src/common/interfaces/response-type.interface';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiBearerAuth()
 @ApiTags('Organizations')
@@ -19,8 +20,8 @@ export class OrganizationsController {
   }
 
   @Get()
-  async getAllOrganizations(): Promise<MicroResponse> {
-    return this.organizationsService.getAllOrganizations();
+  async getAllOrganizations(@Query() params: PaginationDto): Promise<MicroResponse> {
+    return this.organizationsService.getAllOrganizations(+params.page,+params.size);
   }
 
   @Get(':id')
