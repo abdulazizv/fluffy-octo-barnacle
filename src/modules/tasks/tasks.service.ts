@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { Knex } from 'knex';
 import { getMicroResponse } from 'src/common/responses/response-type';
@@ -74,7 +74,7 @@ export class TasksService {
       .first();
 
     if (!task) {
-      return getMicroResponse(HttpStatus.NOT_FOUND,false,'Success',null)
+      return getMicroResponse(HttpStatus.NOT_FOUND,false,'not found',null)
     }
 
     return getMicroResponse(null, true, 'Task fetched successfully', task);
@@ -84,7 +84,7 @@ export class TasksService {
     const task = await this.knex('tasks').where({ id }).first();
 
     if (!task) {
-      throw new NotFoundException('Task not found');
+      return getMicroResponse(HttpStatus.NOT_FOUND,false,'not found',null)
     }
 
     if(updateTaskDto.project_id) {
@@ -102,7 +102,7 @@ export class TasksService {
     const task = await this.knex('tasks').where({ id }).first();
 
     if (!task) {
-      throw new NotFoundException('Task not found');
+      return getMicroResponse(HttpStatus.NOT_FOUND,false,'not found',null);
     }
 
     await this.knex('tasks').where({ id }).del();
