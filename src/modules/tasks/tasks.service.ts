@@ -127,6 +127,22 @@ export class TasksService {
     return getMicroResponse(null, true, 'Task updated successfully', updatedTask[0]);
   }
 
+  async startTask(task_id:number){
+    const task = await this.knex('tasks').where({ id: task_id }).first();
+
+    if (!task) {
+      return getMicroResponse(HttpStatus.NOT_FOUND,false,'not found',null)
+    }
+
+    const updatedTask = await this.knex('tasks').where({ id:task_id }).update(
+        {
+            status: 'IN_PROCESS'
+        }
+    ).returning('*');
+    
+    return getMicroResponse(null, true, 'Task updated successfully', updatedTask[0]);
+  }
+
   async getTasksByStatus(worker_user_id: number) {
     const tasksByStatus = await this.knex('tasks')
       .where({ worker_user_id: worker_user_id })

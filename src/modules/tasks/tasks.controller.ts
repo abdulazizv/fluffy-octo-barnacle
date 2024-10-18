@@ -82,6 +82,15 @@ export class TasksController {
     return this.tasksService.finishTask(task_id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch('start/:task_id') 
+  @ApiOperation({ summary: 'Start a task' })
+  @ApiResponse({ status: 200, description: 'Task started successfully.' })
+  @ApiResponse({ status: 404, description: 'Task not found.' })
+  async startTask(@Param('task_id') task_id: number) {
+    return this.tasksService.startTask(task_id);
+  }
 
   @UseGuards(StaffGuardAuth)
   @Delete(':id')
