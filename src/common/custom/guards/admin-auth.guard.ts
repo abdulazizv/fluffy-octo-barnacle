@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 @Injectable()
-export class StaffGuardAuth implements CanActivate {
+export class AuthAdminRoleGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -19,7 +19,7 @@ export class StaffGuardAuth implements CanActivate {
 
     try {
       const decoded = this.jwtService.verify(token, { secret: process.env.JWT_SECRET });
-      if(![1,2].includes(decoded.role)) {
+      if(decoded.role !== 1) {
         return false
       }
       request['user'] = decoded; 

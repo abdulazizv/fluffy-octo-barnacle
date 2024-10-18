@@ -152,4 +152,44 @@ export class TasksService {
 
     return getMicroResponse(null, true, 'Tasks grouped by project fetched successfully', tasksByProject);
   }
+
+  async getAdminStatistics() {
+    const organizationStatistics = await this.knex('organizations')
+      .leftJoin('projects', 'organizations.id', 'projects.org_id')
+      .leftJoin('tasks', 'projects.id', 'tasks.project_id')
+      .select(
+        'organizations.name as organization_name',
+        this.knex.raw('count(distinct projects.id) as project_count'),
+        this.knex.raw('count(tasks.id) as task_count')
+      )
+      .groupBy('organizations.id');
+
+    const projectStatistics = await this.knex('organizations')
+      .leftJoin('projects', 'organizations.id', 'projects.org_id')
+      .leftJoin('tasks', 'projects.id', 'tasks.project_id')
+      .select(
+        'organizations.name as organization_name',
+        'projects.name as project_name',
+        this.knex.raw('count(tasks.id) as task_count')
+      )
+      .groupBy('organizations.id', 'projects.id');
+
+    const overallStatistics = await this.knex('organizations')
+      .leftJoin('projects', 'organizations.id', 'projects.org_id')
+      .leftJoin('tasks', 'projects.id', 'tasks.project_id')
+      .select(
+        this.knex.raw('count(distinct organizations.id) as total_organizations'),
+        this.knex.raw('count(distinct projects.id) as total_projects'),
+        this.knex.raw('count(tasks.id) as total_tasks')
+      )
+      .first();
+
+    const data = {
+      organizationStatistics,
+      projectStatistics,
+      overallStatistics,
+    };
+
+    return getMicroResponse(null, true, 'Admin statistics fetched successfully', data);
+  }
 }

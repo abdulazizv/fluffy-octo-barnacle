@@ -6,6 +6,8 @@ import { JwtAuthGuard } from 'src/common/custom/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { FilterTaskDto } from './dto/filter-task.dto';
+import { AuthAdminRoleGuard } from 'src/common/custom/guards/admin-auth.guard';
+import { StaffGuardAuth } from 'src/common/custom/guards/auth-guard.staff';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
@@ -13,23 +15,32 @@ import { FilterTaskDto } from './dto/filter-task.dto';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(StaffGuardAuth)
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto, @Req() req) {
     const user_id = req.user.id
     return this.tasksService.createTask(createTaskDto, user_id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getTaskById(@Param('id') id: number) {
     return this.tasksService.getTaskById(id);
   }
 
+  @UseGuards(AuthAdminRoleGuard)
+  @Get('admin/statistics')
+  async getAdminStatistics() {
+    return await this.tasksService.getAdminStatistics();
+  }
+
+  @UseGuards(StaffGuardAuth)
   @Get('filter')
   async filterTasks(@Query() params: FilterTaskDto){
     return this.tasksService.filterTasks(params)
   }
 
+  @UseGuards(StaffGuardAuth)
   @Get('project/:projectId')
   async getAllTasksByProject(@Param('projectId') projectId: number,@Query() params: PaginationDto) {
     return this.tasksService.getAllTasksByProject(projectId,+params.page,+params.size);
@@ -54,7 +65,7 @@ export class TasksController {
   }
 
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(StaffGuardAuth)
   @Patch(':id')
   async updateTask(@Param('id') id: number, @Body() updateTaskDto: UpdateTaskDto) {
     return this.tasksService.updateTask(id, updateTaskDto);
@@ -72,7 +83,7 @@ export class TasksController {
   }
 
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(StaffGuardAuth)
   @Delete(':id')
   async deleteTask(@Param('id') id: number) {
     return this.tasksService.deleteTask(id);
